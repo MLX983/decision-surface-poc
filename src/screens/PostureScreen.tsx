@@ -90,10 +90,8 @@ export function PostureScreen({
                 </button>
               </div>
               <ol className="priorities-section__list">
-                {projectPriorities.items.map((item, index) => (
-                  <li key={item}>
-                    {index + 1}. {item}
-                  </li>
+                {projectPriorities.items.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ol>
             </section>
