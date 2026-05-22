@@ -1,0 +1,86 @@
+:root {
+  /* Figma: Text */
+  --text-brand-dark: #1677d9;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-warning: #bf5000;
+  --text-link: #1262b2;
+  --text-inverse: #ffffff;
+  --link: #003cb2;
+
+  /* Figma: Brand & surfaces */
+  --brand-dark: #1677d9;
+  --brand-light: #e5f0ff;
+  --brand-medium: #b2d2ff;
+  --surface-primary: #ffffff;
+  --surface-brand: #ebf5ff;
+  --surface-brand-highlight: #fffeed;
+  --surface-secondary: #f7f7f7;
+
+  /* Figma: Interface */
+  --interface-primary: #e6e6e6;
+  --interface-secondary: #cccccc;
+  --interface-warning: #ff9933;
+
+  /* Semantic aliases */
+  --color-bg: var(--surface-primary);
+  --color-surface: var(--surface-primary);
+  --color-surface-brand: var(--surface-brand);
+  --color-surface-highlight: var(--surface-brand-highlight);
+  --color-border: var(--interface-primary);
+  --color-border-strong: var(--interface-secondary);
+  --color-border-warning: var(--interface-warning);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-warning: var(--text-warning);
+  --color-accent: var(--text-brand-dark);
+  --color-link: var(--text-link);
+  --color-focus: var(--brand-dark);
+  --color-icon: #343330; /* Figma stone — CaretLeft on nav rows */
+  --color-slider-track: var(--brand-medium);
+  --color-slider-thumb: var(--brand-light);
+
+  /* Figma: Typography families */
+  --font-display: 'Lexend', system-ui, sans-serif;
+  --font-body: 'Albert Sans', system-ui, sans-serif;
+
+  /* Figma: Type scale */
+  --font-size-support: 0.875rem; /* 14px Support Text */
+  --font-size-body: 1rem; /* 16px Body */
+  --font-size-header: 1.25rem; /* 20px Header */
+  --font-size-subhead: 1.125rem; /* 18px Subhead */
+  --font-size-page-title: 1.5rem; /* 24px Page Title */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --line-height-tight: 1;
+  --line-height-body: 1.5;
+
+  /* Figma: Spacing */
+  --space-50: 0.25rem; /* 4 */
+  --space-100: 0.5rem; /* 8 */
+  --space-150: 0.75rem; /* 12 */
+  --space-200: 1rem; /* 16 */
+  --space-300: 1.5rem; /* 24 */
+  --space-600: 3rem; /* 48 */
+
+  /* Back navigation (Screens 2 & 3 — shared) */
+  --back-icon-size: 1.75rem; /* 28px */
+  --back-icon-color: #666666;
+  --back-nav-height: 1.875rem; /* 30px */
+  --back-nav-gap: 0;
+
+  /* Layout — fluid embed (Wix iframe); capped on wider desktop previews */
+  --layout-shell-max-width: 430px;
+  --layout-page-padding-x: clamp(var(--space-100), 4vw, var(--space-200));
+  --layout-page-padding-top: clamp(var(--space-300), 8vw, var(--space-600));
+
+  /* Figma: Radius */
+  --radius-50: 0.25rem; /* 4px */
+
+  /* Motion */
+  --motion-screen: 450ms ease-in-out;
+  --motion-accordion: 600ms ease-in-out;
+}
