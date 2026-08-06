@@ -1,7 +1,7 @@
-import type { RecommendationState } from '../data/recommendationStates';
+import type { ResolvedRecommendation } from '../data/recommendationStates';
 
 interface RecommendationCardProps {
-  state: RecommendationState;
+  state: ResolvedRecommendation;
 }
 
 export function RecommendationCard({ state }: RecommendationCardProps) {
@@ -16,7 +16,7 @@ export function RecommendationCard({ state }: RecommendationCardProps) {
           <strong>Rationale</strong>
         </p>
         <ul className="recommendation-card__rationale-list">
-          {state.reasons.map((reason) => (
+          {state.rationale.map((reason) => (
             <li key={reason}>{reason}</li>
           ))}
         </ul>

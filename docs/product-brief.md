@@ -147,11 +147,14 @@ Status: Stalled
 Finance team requested additional validation
 View interpretations
 
-Recommended approach
 Consider posture change
-Recent meeting signals exceed the project’s current tolerance.
+This posture may reduce pressure before ownership and validation criteria are clear.
 View posture
 ```
+
+This short warning reflects the applied High / Medium / Medium posture, which
+resolves to the advisory `reduceEscalation` state. The warning stays concise so
+the viewer opens Posture for the full analysis.
 
 Updated primary item:
 
@@ -163,7 +166,7 @@ Finance team requested additional validation
 View interpretations
 
 Recommended approach
-Allow limited timeline drift while validation criteria and ownership are clarified.
+Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.
 View posture
 ```
 
@@ -206,7 +209,15 @@ Sensitivity controls:
 Recommendation card:
 
 - Recommended approach
-- Why this fits
+- Rationale
+
+Safe states use the normal recommendation treatment. Advisory states use an
+orange caution card that explains why the current posture needs review.
+
+The Posture sliders are a draft until the viewer exits Posture. Slider changes
+update Posture immediately; exiting applies the selected posture to the
+Watchlist. Reopening preserves the selected values, while refreshing resets the
+prototype to High / Medium / Medium.
 
 Priorities tab content:
 

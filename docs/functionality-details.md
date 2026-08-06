@@ -39,11 +39,14 @@ Status: Stalled
 Finance team requested additional validation
 View interpretations
 
-Recommended approach
 Consider posture change
-Recent meeting signals exceed the project’s current tolerance.
+This posture may reduce pressure before ownership and validation criteria are clear.
 View posture
 ```
+
+This is the short Watchlist summary for the default `reduceEscalation`
+advisory state. The full caution and tradeoff analysis belongs on the Posture
+screen.
 
 ### Updated Primary Card
 
@@ -57,7 +60,7 @@ Finance team requested additional validation
 View interpretations
 
 Recommended approach
-Allow limited timeline drift while validation criteria and ownership are clarified.
+Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.
 View posture
 ```
 
@@ -251,15 +254,15 @@ Low / Med / High
 
 ### Slider Values
 
-For prototype simplicity, sliders should snap to three values:
+The visual sliders use five snap positions grouped into three semantic levels:
 
 ```text
-low
-medium
-high
+Positions 0–1: Low
+Position 2: Medium
+Positions 3–4: High
 ```
 
-The UI can visually appear continuous, but the logic should treat values as discrete bands.
+Recommendation mapping uses the semantic level, not the raw visual position.
 
 ### Recommendation Card
 
@@ -272,200 +275,105 @@ Recommended approach
 Subsection label:
 
 ```text
-Why this fits
+Rationale
 ```
 
 The card content should update when slider settings cross into one of the defined states below.
 
 Not every slider adjustment needs to produce a new recommendation. The system should feel stable and deterministic, not overly reactive.
 
-## Recommendation States
+## Recommendation Mapping
 
-### State 1: Clarify approval ownership
+The mapping is evaluated in order. Order matters because some rules overlap;
+the first matching rule wins.
 
-Slider settings:
+1. `surfaceBottleneck`: any timeline / Low scope / Low resources
+2. `increaseVisibility`: High timeline / Low scope / Medium resources
+3. `narrowScope`: High timeline / High scope / any resources
+4. `clarifyOwnership`: High timeline / Medium scope / Low resources
+5. `allowLimitedDrift`: any timeline / Medium scope / High resources
+6. `reduceEscalation`: all remaining combinations
 
-- Timeline sensitivity: High
-- Scope flexibility: Medium
-- Resource tolerance: Low
+### State Content and Classification
 
-Title:
+- `surfaceBottleneck` — safe. “Surface this as a resourcing bottleneck and assign a clear validation owner.”
+- `increaseVisibility` — safe. “Increase visibility with a neutral summary of open validation questions and ownership gaps.”
+- `narrowScope` — advisory. The Posture screen warns that narrowing scope could leave validation unresolved; the Watchlist shows the shorter `Consider posture change` summary.
+- `clarifyOwnership` — safe. “Clarify approval ownership now to prevent avoidable timeline risk.”
+- `allowLimitedDrift` — safe. “Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.”
+- `reduceEscalation` — advisory. The Posture screen warns that reducing pressure may be premature; the Watchlist shows the shorter `Consider posture change` summary.
 
-```text
-Clarify ownership
-```
+Rationale content is resolved from the active semantic posture levels. In
+particular, `allowLimitedDrift` describes the active timeline level together
+with Medium scope flexibility and High resource tolerance.
 
-Recommended approach:
+## Safe and Advisory Presentation
 
-```text
-Clarify approval ownership now to prevent avoidable timeline risk.
-```
+### Safe State
 
-Why this fits:
+Posture screen:
 
-- Current sensitivity settings place high weight on delivery predictability and low tolerance for unresolved handoffs.
-- This aligns with current priorities to avoid unnecessary escalation, preserve cross-team trust, and increase delivery predictability.
+- recommended approach
+- rationale
+- normal visual treatment
 
-### State 2: Narrow scope to protect timeline
+Watchlist:
 
-Slider settings:
+- `Recommended approach`
+- full approach text
+- `View posture`
 
-- Timeline sensitivity: High
-- Scope flexibility: High
-- Resource tolerance: Low or Medium
+### Advisory State
 
-Title:
+Posture screen:
 
-```text
-Narrow scope
-```
+- concise caution card explaining the problem with the current posture
+- orange caution treatment
 
-Recommended approach:
+Watchlist:
 
-```text
-Protect the timeline by narrowing or staging scope while approval questions are resolved.
-```
+- `Consider posture change`
+- short warning summary
+- `View posture`
 
-Why this fits:
+The Watchlist warning is intentionally shorter than the Posture analysis. Do
+not copy the full recommendation, rationale, or caution body into the
+Watchlist.
 
-- Current sensitivity settings prioritize schedule stability and allow scope to flex before the timeline is put at risk.
-- This aligns with current priorities to increase delivery predictability while avoiding unnecessary escalation over unresolved approval details.
-
-### State 3: Reduce escalation pressure
-
-Slider settings:
-
-- Timeline sensitivity: Medium
-- Scope flexibility: Medium
-- Resource tolerance: Medium
-
-Title:
-
-```text
-Reduce escalation pressure
-```
-
-Recommended approach:
-
-```text
-Reduce escalation pressure and clarify ownership through the next working session.
-```
-
-Why this fits:
-
-- Current sensitivity settings indicate moderate timeline concern but enough flexibility to resolve ambiguity without forcing escalation.
-- This aligns with current priorities to preserve cross-team trust while improving delivery predictability through clearer ownership.
-
-### State 4: Allow limited timeline drift
-
-Slider settings:
-
-- Timeline sensitivity: Low or Medium
-- Scope flexibility: Medium
-- Resource tolerance: High
-
-Title:
-
-```text
-Allow limited drift
-```
-
-Recommended approach:
-
-```text
-Allow limited timeline drift while validation criteria and ownership are clarified.
-```
-
-Why this fits:
-
-- Current sensitivity settings allow the project to absorb some delay in exchange for stronger decision clarity.
-- This aligns with current priorities to avoid unnecessary escalation, preserve Finance alignment, and prevent premature commitment.
-
-### State 5: Surface resourcing bottleneck
-
-Slider settings:
-
-- Timeline sensitivity: Medium or High
-- Scope flexibility: Low
-- Resource tolerance: Low
-
-Title:
-
-```text
-Surface bottleneck
-```
-
-Recommended approach:
-
-```text
-Surface this as a resourcing bottleneck and assign a clear validation owner.
-```
-
-Why this fits:
-
-- Current sensitivity settings show low tolerance for added resource strain and limited ability to absorb unresolved handoffs.
-- This aligns with current priorities to increase delivery predictability without framing the issue as stakeholder resistance.
-
-### State 6: Increase visibility carefully
-
-Slider settings:
-
-- Timeline sensitivity: High
-- Scope flexibility: Low
-- Resource tolerance: Medium
-
-Title:
-
-```text
-Increase visibility
-```
-
-Recommended approach:
-
-```text
-Increase visibility with a neutral summary of open validation questions and ownership gaps.
-```
-
-Why this fits:
-
-- Current sensitivity settings indicate that ambiguity is nearing the limit of what the project can absorb without broader awareness.
-- This aligns with current priorities to improve delivery predictability while reducing the risk that escalation is perceived as blame or pressure.
-
-## Recommended Default and Demonstration States
+## Default and Demonstration States
 
 ### Default State
-
-Use State 1 as the initial default for Screen 3.
 
 ```text
 Timeline sensitivity: High
 Scope flexibility: Medium
-Resource tolerance: Low
+Resource tolerance: Medium
+Recommendation state: reduceEscalation
+Classification: advisory
 ```
 
-Recommended approach:
+The initial Watchlist therefore shows `Consider posture change` and the short
+`reduceEscalation` warning summary. Opening Posture shows the same High /
+Medium / Medium posture and its orange caution card.
 
-```text
-Clarify approval ownership now to prevent avoidable timeline risk.
-```
-
-### Updated State
-
-Use State 4 as the adjusted state for the demonstration.
+### Demonstration Target
 
 ```text
 Timeline sensitivity: Medium
 Scope flexibility: Medium
 Resource tolerance: High
+Recommendation state: allowLimitedDrift
+Classification: safe
 ```
 
-Recommended approach:
+When the viewer exits Posture with this selection, the first Watchlist card
+shows:
 
 ```text
-Allow limited timeline drift while validation criteria and ownership are clarified.
+Recommended approach
+Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.
+View posture
 ```
-
-When the user returns to the Watchlist after this adjustment, the first card should show the updated recommendation.
 
 ## Screen 3: Priorities Tab
 
@@ -512,10 +420,10 @@ Known strategic tensions
 ### Screen 3
 
 - Back arrow returns to Screen 1.
-- Slider changes auto-save.
 - No Save or Cancel buttons.
-- The recommendation card updates immediately as sliders change.
-- The updated recommendation should be reflected on Screen 1.
+- Slider changes update the draft recommendation immediately.
+- Exiting Posture applies the draft posture to the Watchlist.
+- Reopening Posture preserves the selected slider values.
 
 ## Interaction Requirements
 
@@ -526,39 +434,18 @@ Known strategic tensions
 - Recommendation state should update only when the semantic value changes.
 - Use a deterministic mapping from slider values to recommendation states.
 
-### Recommended Mapping Priority
+### Draft and Applied Posture
 
-Because some combinations may overlap, evaluate states in this order:
+- `postureSettings` contains the slider values currently being explored on the Posture screen.
+- `appliedPostureSettings` contains the posture currently reflected on the Watchlist.
+- Both start from the same High / Medium / Medium default.
+- Posture resolves recommendation content from `postureSettings` immediately.
+- Watchlist resolves its display from `appliedPostureSettings`.
+- Exiting Posture copies `postureSettings` to `appliedPostureSettings`.
+- Refreshing the prototype resets both values to the default; persistence is not implemented.
 
-1. Surface bottleneck
-2. Increase visibility
-3. Narrow scope
-4. Clarify ownership
-5. Allow limited drift
-6. Reduce escalation pressure
-7. Default fallback: Reduce escalation pressure
-
-### Example Mapping Logic
-
-```text
-If resource tolerance is Low and scope flexibility is Low:
-  Surface bottleneck
-
-Else if timeline sensitivity is High and scope flexibility is Low and resource tolerance is Medium:
-  Increase visibility
-
-Else if timeline sensitivity is High and scope flexibility is High:
-  Narrow scope
-
-Else if timeline sensitivity is High and resource tolerance is Low:
-  Clarify ownership
-
-Else if resource tolerance is High and scope flexibility is Medium:
-  Allow limited drift
-
-Else:
-  Reduce escalation pressure
-```
+Both screens use the same ordered recommendation mapping documented above.
+There is no pre-commit warning override.
 
 ## Visual Direction
 
@@ -602,12 +489,15 @@ src/state/posture.ts
 Suggested state:
 
 ```text
-currentScreen
-timelineSensitivity
-scopeFlexibility
-resourceTolerance
-activeRecommendationState
-hasReviewedPosture
+overlayScreen
+postureSettings
+appliedPostureSettings
+postureTab
 ```
+
+Recommendation titles, approaches, rationale generation, caution content, and
+Watchlist advisory summaries live in
+`src/data/recommendationStates.ts`. Screen components render the resolved
+content and do not own recommendation-domain language.
 
 The prototype should prioritize clear cause and effect over feature completeness.

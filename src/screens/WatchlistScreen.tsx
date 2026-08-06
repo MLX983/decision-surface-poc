@@ -10,19 +10,14 @@ import type { RecommendationStateKey } from '../types';
 
 interface WatchlistScreenProps {
   activeRecommendationKey: RecommendationStateKey;
-  hasCommittedPosture: boolean;
   onViewInterpretations: () => void;
   onViewPosture: () => void;
 }
 
 function resolveWatchItems(
   activeRecommendationKey: RecommendationStateKey,
-  hasCommittedPosture: boolean,
 ): WatchItem[] {
-  const primaryDisplay = getWatchlistPrimaryDisplay(
-    activeRecommendationKey,
-    hasCommittedPosture,
-  );
+  const primaryDisplay = getWatchlistPrimaryDisplay(activeRecommendationKey);
 
   return watchItems.map((item) => {
     if (!item.isPrimary) {
@@ -39,15 +34,11 @@ function resolveWatchItems(
 
 export function WatchlistScreen({
   activeRecommendationKey,
-  hasCommittedPosture,
   onViewInterpretations,
   onViewPosture,
 }: WatchlistScreenProps) {
-  const items = resolveWatchItems(activeRecommendationKey, hasCommittedPosture);
-  const primaryDisplay = getWatchlistPrimaryDisplay(
-    activeRecommendationKey,
-    hasCommittedPosture,
-  );
+  const items = resolveWatchItems(activeRecommendationKey);
+  const primaryDisplay = getWatchlistPrimaryDisplay(activeRecommendationKey);
 
   return (
     <AppShell title={watchlistMeta.title} subtitle={watchlistMeta.subtitle}>

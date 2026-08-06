@@ -74,6 +74,31 @@ The recommendation card updates immediately as slider settings change.
 
 The Priorities tab shows the project-level goals and strategic tensions that influence the recommendation.
 
+## Recommendation Behavior
+
+The default posture is High timeline sensitivity, Medium scope flexibility,
+and Medium resource tolerance. It resolves to the advisory
+`reduceEscalation` state, so the initial Watchlist shows a short
+`Consider posture change` warning. The fuller caution belongs on the Posture
+screen.
+
+The demonstration target is Medium / Medium / High. It resolves to the safe
+`allowLimitedDrift` state, so the Watchlist shows the full recommended approach
+without a warning.
+
+Recommendation rules are evaluated in this order:
+
+1. `surfaceBottleneck`: any timeline / Low scope / Low resources
+2. `increaseVisibility`: High timeline / Low scope / Medium resources
+3. `narrowScope`: High timeline / High scope / any resources
+4. `clarifyOwnership`: High timeline / Medium scope / Low resources
+5. `allowLimitedDrift`: any timeline / Medium scope / High resources
+6. `reduceEscalation`: all remaining combinations
+
+`postureSettings` contains the draft being explored on Posture.
+`appliedPostureSettings` contains the posture reflected on Watchlist. Exiting
+Posture applies the draft; refreshing resets both to the default.
+
 ## Design Principles
 
 - Mobile-first
@@ -92,6 +117,10 @@ The Priorities tab shows the project-level goals and strategic tensions that inf
 - Screen 3 Sensitivity: Slider-driven recommendation state
 - Screen 3 Priorities: Project priorities and known tensions
 - Screen 1 Updated: Watchlist after posture adjustment
+
+The files in `design/screenshots` are historical reference artifacts and may
+show the earlier High / Medium / Low default. The implementation and current
+documentation are the source of truth for behavior and copy.
 
 ## Suggested Local Structure
 

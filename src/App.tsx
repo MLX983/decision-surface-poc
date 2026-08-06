@@ -20,7 +20,6 @@ export default function App() {
     useState<PostureSettings>(defaultPostureSettings);
   const [appliedPostureSettings, setAppliedPostureSettings] =
     useState<PostureSettings>(defaultPostureSettings);
-  const [hasCommittedPosture, setHasCommittedPosture] = useState(false);
   const [postureTab, setPostureTab] = useState<PostureTab>('sensitivity');
 
   const watchlistRecommendationKey =
@@ -39,7 +38,6 @@ export default function App() {
   function handleOverlayExitComplete() {
     if (overlayScreen === 'posture') {
       setAppliedPostureSettings(postureSettings);
-      setHasCommittedPosture(true);
     }
     setOverlayScreen(null);
     setOverlayExiting(false);
@@ -63,7 +61,6 @@ export default function App() {
       base={
         <WatchlistScreen
           activeRecommendationKey={watchlistRecommendationKey}
-          hasCommittedPosture={hasCommittedPosture}
           onViewInterpretations={() => navigateTo('interpretations')}
           onViewPosture={() => {
             setPostureTab('sensitivity');

@@ -94,11 +94,13 @@ Status: Stalled
 Finance team requested additional validation
 View interpretations
 
-Recommended approach
 Consider posture change
-Recent meeting signals exceed the project’s current tolerance.
+This posture may reduce pressure before ownership and validation criteria are clear.
 View posture
 ```
+
+The warning is intentionally short. The full caution and recommendation
+analysis belongs on the Posture screen.
 
 After posture adjustment, this card should update to:
 
@@ -110,7 +112,7 @@ Finance team requested additional validation
 View interpretations
 
 Recommended approach
-Allow limited timeline drift while validation criteria and ownership are clarified.
+Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.
 View posture
 ```
 
@@ -301,97 +303,78 @@ Resource tolerance
 Low / Med / High
 ```
 
-Slider values should be semantic values:
+The UI uses five visual snap positions mapped to three semantic values:
 
 ```ts
 type Level = "low" | "medium" | "high";
-```
 
-The UI may use HTML range inputs from 0 to 2, mapped to low, medium, high.
+// positions 0–1 → low
+// position 2 → medium
+// positions 3–4 → high
+```
 
 Initial values:
 
 ```ts
 timelineSensitivity = "high";
 scopeFlexibility = "medium";
-resourceTolerance = "low";
+resourceTolerance = "medium";
 ```
 
 Initial recommendation state:
 
 ```text
-Clarify ownership
+Reduce escalation pressure (advisory)
 ```
 
 Recommendation card labels:
 
 ```text
 Recommended approach
-Why this fits
+Rationale
 ```
 
 Card content should update based on slider state.
 
 ## Recommendation States
 
-Create a data structure with these states:
+Centralize recommendation-domain content in
+`src/data/recommendationStates.ts`. State definitions should own titles,
+approaches, risk classification, rationale generation, caution content, and
+short Watchlist summaries:
 
 ```ts
-const recommendationStates = {
-  clarifyOwnership: {
-    title: "Clarify ownership",
-    approach: "Clarify approval ownership now to prevent avoidable timeline risk.",
-    reasons: [
-      "Current sensitivity settings place high weight on delivery predictability and low tolerance for unresolved handoffs.",
-      "This aligns with current priorities to avoid unnecessary escalation, preserve cross-team trust, and increase delivery predictability."
-    ]
-  },
-  narrowScope: {
-    title: "Narrow scope",
-    approach: "Protect the timeline by narrowing or staging scope while approval questions are resolved.",
-    reasons: [
-      "Current sensitivity settings prioritize schedule stability and allow scope to flex before the timeline is put at risk.",
-      "This aligns with current priorities to increase delivery predictability while avoiding unnecessary escalation over unresolved approval details."
-    ]
-  },
-  reduceEscalation: {
-    title: "Reduce escalation pressure",
-    approach: "Reduce escalation pressure and clarify ownership through the next working session.",
-    reasons: [
-      "Current sensitivity settings indicate moderate timeline concern but enough flexibility to resolve ambiguity without forcing escalation.",
-      "This aligns with current priorities to preserve cross-team trust while improving delivery predictability through clearer ownership."
-    ]
-  },
-  allowLimitedDrift: {
-    title: "Allow limited drift",
-    approach: "Allow limited timeline drift while validation criteria and ownership are clarified.",
-    reasons: [
-      "Current sensitivity settings allow the project to absorb some delay in exchange for stronger decision clarity.",
-      "This aligns with current priorities to avoid unnecessary escalation, preserve Finance alignment, and prevent premature commitment."
-    ]
-  },
-  surfaceBottleneck: {
-    title: "Surface bottleneck",
-    approach: "Surface this as a resourcing bottleneck and assign a clear validation owner.",
-    reasons: [
-      "Current sensitivity settings show low tolerance for added resource strain and limited ability to absorb unresolved handoffs.",
-      "This aligns with current priorities to increase delivery predictability without framing the issue as stakeholder resistance."
-    ]
-  },
-  increaseVisibility: {
-    title: "Increase visibility",
-    approach: "Increase visibility with a neutral summary of open validation questions and ownership gaps.",
-    reasons: [
-      "Current sensitivity settings indicate that ambiguity is nearing the limit of what the project can absorb without broader awareness.",
-      "This aligns with current priorities to improve delivery predictability while reducing the risk that escalation is perceived as blame or pressure."
-    ]
-  }
-};
+interface RecommendationState {
+  title: string;
+  approach: string;
+  riskLevel: "safe" | "advisory";
+  getRationale: (levels: SemanticPostureLevels) => string[];
+  watchlist?: {
+    advisoryTitle: string;
+    advisorySummary: string;
+  };
+  caution?: {
+    title: string;
+    getBody: (levels: SemanticPostureLevels) => string;
+  };
+}
 ```
+
+Screen components should render resolved content rather than own
+recommendation-domain language.
 
 ## Recommendation Mapping Logic
 
-Implement a function like:
+Evaluate rules in this order; the first match wins:
+
+1. `surfaceBottleneck`: any timeline / Low scope / Low resources
+2. `increaseVisibility`: High timeline / Low scope / Medium resources
+3. `narrowScope`: High timeline / High scope / any resources
+4. `clarifyOwnership`: High timeline / Medium scope / Low resources
+5. `allowLimitedDrift`: any timeline / Medium scope / High resources
+6. `reduceEscalation`: all remaining combinations
+
+The implementation is equivalent to:
 
 ```ts
 function getRecommendationState({
@@ -436,13 +419,13 @@ Default:
 ```text
 Timeline sensitivity: High
 Scope flexibility: Medium
-Resource tolerance: Low
+Resource tolerance: Medium
 ```
 
-Recommendation:
+Recommendation state:
 
 ```text
-Clarify approval ownership now to prevent avoidable timeline risk.
+reduceEscalation (advisory)
 ```
 
 Updated:
@@ -456,10 +439,30 @@ Resource tolerance: High
 Recommendation:
 
 ```text
-Allow limited timeline drift while validation criteria and ownership are clarified.
+Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.
 ```
 
 When the user returns to Watchlist after the recommendation state becomes `allowLimitedDrift`, update the first Watchlist card to show that recommendation.
+
+## Safe and Advisory Presentation
+
+Safe states show the recommended approach and rationale with normal treatment
+on Posture. Their Watchlist display shows `Recommended approach`, the approach
+text, and `View posture`.
+
+Advisory states show a concise orange caution card on Posture. Their Watchlist
+display shows `Consider posture change`, a short warning summary, and
+`View posture`. Keep this Watchlist summary shorter than the Posture analysis.
+
+## Draft and Applied Posture
+
+- `postureSettings` is the draft currently being explored on Posture.
+- `appliedPostureSettings` is the posture currently reflected on Watchlist.
+- Slider changes update Posture immediately.
+- Exiting Posture copies the draft to the applied posture.
+- Reopening Posture preserves the selected values.
+- Refreshing resets both values to High / Medium / Medium.
+- Both screens use the same recommendation mapping; do not add a pre-commit warning override.
 
 ## Priorities Tab
 

@@ -5,7 +5,7 @@ export interface WatchItem {
   title: string;
   status: WatchItemStatus;
   summary: string;
-  recommendationTitle: string;
+  recommendationTitle?: string;
   recommendationDetail?: string;
   isPrimary?: boolean;
 }
@@ -15,20 +15,12 @@ export const watchlistMeta = {
   subtitle: 'Items approaching or exceeding current posture settings.',
 } as const;
 
-export const primaryWatchItemDefaults = {
-  recommendationTitle: 'Consider posture change',
-  recommendationDetail:
-    'Recent meeting signals exceed the project’s current tolerance.',
-} as const;
-
 export const watchItems: WatchItem[] = [
   {
     id: 'vendor-approval-delay',
     title: 'Vendor approval delay',
     status: 'Stalled',
     summary: 'Finance team requested additional validation',
-    recommendationTitle: primaryWatchItemDefaults.recommendationTitle,
-    recommendationDetail: primaryWatchItemDefaults.recommendationDetail,
     isPrimary: true,
   },
   {

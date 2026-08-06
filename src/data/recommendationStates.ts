@@ -1,18 +1,43 @@
-import { primaryWatchItemDefaults } from './decisionSurfaceData';
-import type { PostureSettings, RecommendationStateKey } from '../types';
+import type {
+  Level,
+  PostureSettings,
+  RecommendationStateKey,
+} from '../types';
 import { positionToLevel } from '../utils/levels';
 
 export type RiskLevel = 'safe' | 'advisory';
 
+export interface SemanticPostureLevels {
+  timelineSensitivity: Level;
+  scopeFlexibility: Level;
+  resourceTolerance: Level;
+}
+
 export interface RecommendationState {
   title: string;
   approach: string;
-  reasons: string[];
   riskLevel: RiskLevel;
-  watchlistHeader?: string;
-  watchlistBody?: string;
-  warningTitle?: string;
-  warningBody?: string;
+  getRationale: (levels: SemanticPostureLevels) => string[];
+  watchlist?: {
+    advisoryTitle: string;
+    advisorySummary: string;
+  };
+  caution?: {
+    title: string;
+    getBody: (levels: SemanticPostureLevels) => string;
+  };
+}
+
+export interface ResolvedRecommendation {
+  key: RecommendationStateKey;
+  title: string;
+  approach: string;
+  rationale: string[];
+  riskLevel: RiskLevel;
+  caution?: {
+    title: string;
+    body: string;
+  };
 }
 
 export const WATCHLIST_CONSIDER_POSTURE_HEADER = 'Consider posture change';
@@ -25,105 +50,113 @@ export const recommendationStates: Record<
     title: 'Clarify ownership',
     approach:
       'Clarify approval ownership now to prevent avoidable timeline risk.',
-    reasons: [
+    riskLevel: 'safe',
+    getRationale: () => [
       'Current sensitivity settings place high weight on delivery predictability and low tolerance for unresolved handoffs.',
       'This aligns with current priorities to avoid unnecessary escalation, preserve cross-team trust, and increase delivery predictability.',
     ],
-    riskLevel: 'safe',
   },
   narrowScope: {
     title: 'Narrow scope',
     approach:
       'Protect the timeline by narrowing or staging scope while approval questions are resolved.',
-    reasons: [
+    riskLevel: 'advisory',
+    getRationale: () => [
       'Current sensitivity settings prioritize schedule stability and allow scope to flex before the timeline is put at risk.',
       'This aligns with current priorities to increase delivery predictability while avoiding unnecessary escalation over unresolved approval details.',
     ],
-    riskLevel: 'advisory',
-    watchlistHeader: WATCHLIST_CONSIDER_POSTURE_HEADER,
-    watchlistBody:
-      'Narrowing scope may protect the timeline, but it could leave the validation issue unresolved.',
-    warningTitle: 'Caution',
-    warningBody:
-      'Narrowing scope may protect the timeline, but it could leave the validation issue unresolved. Clarify approval criteria before treating this as the next action.',
+    watchlist: {
+      advisoryTitle: WATCHLIST_CONSIDER_POSTURE_HEADER,
+      advisorySummary:
+        'Narrowing scope may protect the timeline, but it could leave the validation issue unresolved.',
+    },
+    caution: {
+      title: 'Caution',
+      getBody: () =>
+        'Narrowing scope may protect the timeline, but it could leave the validation issue unresolved. Clarify approval criteria before treating this as the next action.',
+    },
   },
   reduceEscalation: {
     title: 'Reduce escalation pressure',
     approach:
       'Reduce escalation pressure and clarify ownership through the next working session.',
-    reasons: [
-      'Current sensitivity settings indicate moderate timeline concern but enough flexibility to resolve ambiguity without forcing escalation.',
+    riskLevel: 'advisory',
+    getRationale: () => [
+      'Current sensitivity settings provide enough flexibility to resolve ambiguity without forcing escalation.',
       'This aligns with current priorities to preserve cross-team trust while improving delivery predictability through clearer ownership.',
     ],
-    riskLevel: 'advisory',
-    watchlistHeader: WATCHLIST_CONSIDER_POSTURE_HEADER,
-    watchlistBody:
-      'This posture may reduce pressure before ownership and validation criteria are clear.',
-    warningTitle: 'Caution',
-    warningBody:
-      'This posture may reduce pressure before ownership and validation criteria are clear. Review before applying it to the Watchlist.',
+    watchlist: {
+      advisoryTitle: WATCHLIST_CONSIDER_POSTURE_HEADER,
+      advisorySummary:
+        'This posture may reduce pressure before ownership and validation criteria are clear.',
+    },
+    caution: {
+      title: 'Caution',
+      getBody: () =>
+        'This posture may reduce pressure before ownership and validation criteria are clear. Review before applying it to the Watchlist.',
+    },
   },
   allowLimitedDrift: {
     title: 'Allow limited drift',
     approach:
       'Allow a tightly bounded timeline adjustment while validation criteria and ownership are clarified.',
-    reasons: [
-      'Although timeline sensitivity may be high, resource tolerance allows a limited adjustment if it prevents premature commitment.',
+    riskLevel: 'safe',
+    getRationale: (levels) => [
+      `${describeTimelineSensitivity(levels.timelineSensitivity)} timeline sensitivity, ${levels.scopeFlexibility} scope flexibility, and ${levels.resourceTolerance} resource tolerance allow the project to absorb a limited, bounded delay while validation criteria and ownership are clarified.`,
       'This preserves delivery predictability by making the delay intentional, bounded, and tied to clearer validation criteria.',
     ],
-    riskLevel: 'safe',
   },
   surfaceBottleneck: {
     title: 'Surface bottleneck',
     approach:
       'Surface this as a resourcing bottleneck and assign a clear validation owner.',
-    reasons: [
+    riskLevel: 'safe',
+    getRationale: () => [
       'Current sensitivity settings show low tolerance for added resource strain and limited ability to absorb unresolved handoffs.',
       'This aligns with current priorities to increase delivery predictability without framing the issue as stakeholder resistance.',
     ],
-    riskLevel: 'safe',
   },
   increaseVisibility: {
     title: 'Increase visibility',
     approach:
       'Increase visibility with a neutral summary of open validation questions and ownership gaps.',
-    reasons: [
+    riskLevel: 'safe',
+    getRationale: () => [
       'Current sensitivity settings indicate that ambiguity is nearing the limit of what the project can absorb without broader awareness.',
       'This aligns with current priorities to improve delivery predictability while reducing the risk that escalation is perceived as blame or pressure.',
     ],
-    riskLevel: 'safe',
   },
 };
 
-export function isAdvisoryRecommendation(
-  key: RecommendationStateKey,
-): boolean {
-  return recommendationStates[key].riskLevel === 'advisory';
+function describeTimelineSensitivity(level: Level): string {
+  if (level === 'medium') return 'Moderate';
+  return level === 'low' ? 'Low' : 'High';
+}
+
+export function getSemanticPostureLevels(
+  settings: PostureSettings,
+): SemanticPostureLevels {
+  return {
+    timelineSensitivity: positionToLevel(settings.timelineSensitivity),
+    scopeFlexibility: positionToLevel(settings.scopeFlexibility),
+    resourceTolerance: positionToLevel(settings.resourceTolerance),
+  };
 }
 
 export function getWatchlistPrimaryDisplay(
   key: RecommendationStateKey,
-  hasCommittedPosture: boolean,
 ): {
   variant: 'alert' | 'normal';
   title: string;
   detail?: string;
 } {
-  if (!hasCommittedPosture) {
-    return {
-      variant: 'alert',
-      title: primaryWatchItemDefaults.recommendationTitle,
-      detail: primaryWatchItemDefaults.recommendationDetail,
-    };
-  }
-
   const state = recommendationStates[key];
 
-  if (state.riskLevel === 'advisory') {
+  if (state.riskLevel === 'advisory' && state.watchlist) {
     return {
       variant: 'alert',
-      title: state.watchlistHeader ?? WATCHLIST_CONSIDER_POSTURE_HEADER,
-      detail: state.watchlistBody,
+      title: state.watchlist.advisoryTitle,
+      detail: state.watchlist.advisorySummary,
     };
   }
 
@@ -136,9 +169,11 @@ export function getWatchlistPrimaryDisplay(
 export function getRecommendationState(
   settings: PostureSettings,
 ): RecommendationStateKey {
-  const timelineSensitivity = positionToLevel(settings.timelineSensitivity);
-  const scopeFlexibility = positionToLevel(settings.scopeFlexibility);
-  const resourceTolerance = positionToLevel(settings.resourceTolerance);
+  const {
+    timelineSensitivity,
+    scopeFlexibility,
+    resourceTolerance,
+  } = getSemanticPostureLevels(settings);
 
   if (resourceTolerance === 'low' && scopeFlexibility === 'low') {
     return 'surfaceBottleneck';
@@ -167,11 +202,33 @@ export function getRecommendationState(
   return 'reduceEscalation';
 }
 
-/** Demo default — High / Med / Low → alert watchlist state */
+export function getRecommendationForSettings(
+  settings: PostureSettings,
+): ResolvedRecommendation {
+  const levels = getSemanticPostureLevels(settings);
+  const key = getRecommendationState(settings);
+  const state = recommendationStates[key];
+
+  return {
+    key,
+    title: state.title,
+    approach: state.approach,
+    rationale: state.getRationale(levels),
+    riskLevel: state.riskLevel,
+    caution: state.caution
+      ? {
+          title: state.caution.title,
+          body: state.caution.getBody(levels),
+        }
+      : undefined,
+  };
+}
+
+/** Demo default — High / Med / Med → reduce escalation advisory */
 export const defaultPostureSettings: PostureSettings = {
   timelineSensitivity: 4,
   scopeFlexibility: 2,
-  resourceTolerance: 0,
+  resourceTolerance: 2,
 };
 
 /** Demo target — Med / Med / High → updated primary watchlist card */

@@ -10,11 +10,7 @@ import {
   sensitivitySliders,
   strategicTensions,
 } from '../data/decisionSurfaceData';
-import {
-  getRecommendationState,
-  isAdvisoryRecommendation,
-  recommendationStates,
-} from '../data/recommendationStates';
+import { getRecommendationForSettings } from '../data/recommendationStates';
 import type { PostureSettings, PostureTab } from '../types';
 
 interface PostureScreenProps {
@@ -32,8 +28,7 @@ export function PostureScreen({
   onTabChange,
   onSettingsChange,
 }: PostureScreenProps) {
-  const recommendationKey = getRecommendationState(settings);
-  const recommendation = recommendationStates[recommendationKey];
+  const recommendation = getRecommendationForSettings(settings);
 
   function updateSetting<K extends keyof PostureSettings>(
     key: K,
@@ -64,12 +59,10 @@ export function PostureScreen({
               ))}
             </div>
             <div className="posture-screen__recommendations">
-              {isAdvisoryRecommendation(recommendationKey) &&
-              recommendation.warningTitle &&
-              recommendation.warningBody ? (
+              {recommendation.caution ? (
                 <CautionCard
-                  title={recommendation.warningTitle}
-                  body={recommendation.warningBody}
+                  title={recommendation.caution.title}
+                  body={recommendation.caution.body}
                 />
               ) : (
                 <RecommendationCard state={recommendation} />
